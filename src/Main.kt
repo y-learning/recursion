@@ -82,3 +82,18 @@ fun <T> makeStringFoldLeft(list: List<T>, delim: String): String =
             if (acc.isEmpty()) "$item"
             else "$acc $delim $item"
         })
+
+fun string(list: List<Char>): String =
+        if (list.isEmpty()) ""
+        else preAppend(list.first(), string(list.drop(1)))
+
+fun <T, U> foldRight(list: List<T>, stop: U, f: (T, U) -> U): U {
+    fun foldRight(list: List<T>, stop: U) =
+            if (list.isEmpty()) stop
+            else f(list.first(), foldRight(list.drop(1), stop, f))
+
+    return foldRight(list, stop)
+}
+
+fun stringFoldRight(list: List<Char>) =
+        foldRight(list, "", ::preAppend)
