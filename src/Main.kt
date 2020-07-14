@@ -38,18 +38,22 @@ tailrec fun add(a: Int, b: Int): Int {
 fun <T> makeString(list: List<T>, delim: String): String =
         when {
             list.isEmpty() -> ""
-            list.drop(1).isEmpty() -> "${list.first()} ${makeString(list.drop(1), delim)}"
-            else -> "${list.first()} $delim ${makeString(list.drop(1), delim)}"
+            list.drop(1).isEmpty() ->
+                "${list.first()} ${makeString(list.drop(1), delim)}"
+            else ->
+                "${list.first()} $delim ${makeString(list.drop(1), delim)}"
         }
 
 fun <T> makeStringTail(list: List<T>, delim: String): String {
+    tailrec fun makeStringTailIter(list: List<T>, acc: String): String {
+        if (list.isEmpty()) return acc
 
-    tailrec fun makeStringTailIter(list: List<T>, acc: String): String =
-            when {
-                list.isEmpty() -> acc
-                acc.isEmpty() -> makeStringTailIter(list.drop(1), "${list.first()}")
-                else -> makeStringTailIter(list.drop(1), "$acc $delim ${list.first()}")
-            }
+        val rest = list.drop(1)
+        val first = list.first()
+
+        return if (acc.isEmpty()) makeStringTailIter(rest, "$first")
+        else makeStringTailIter(rest, "$acc $delim $first")
+    }
 
     return makeStringTailIter(list, "")
 }
@@ -73,9 +77,8 @@ fun <T> f(delim: String): (T, String) -> String =
             else "$acc $delim $item"
         }
 
-fun <T> makeStringFoldLeft(list: List<T>, delim: String): String {
-    return foldLeft(list, "", { item: T, acc: String ->
-        if (acc.isEmpty()) "$item"
-        else "$acc $delim $item"
-    })
-}
+fun <T> makeStringFoldLeft(list: List<T>, delim: String): String =
+        foldLeft(list, "", { item: T, acc: String ->
+            if (acc.isEmpty()) "$item"
+            else "$acc $delim $item"
+        })
