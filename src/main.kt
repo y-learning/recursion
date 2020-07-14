@@ -65,6 +65,25 @@ fun fibonacci(n: Int): BigInteger {
     return fibonacci(BigInteger.ONE, n, BigInteger.ZERO)
 }
 
+fun <T> makeString(list: List<T>, delim: String): String =
+    when {
+        list.isEmpty() -> ""
+        list.drop(1).isEmpty() -> "${list.first()} ${makeString(list.drop(1), delim)}"
+        else -> "${list.first()} $delim ${makeString(list.drop(1), delim)}"
+    }
+
+fun <T> makeStringTail(list: List<T>, delim: String): String {
+
+    tailrec fun makeStringTailIter(list: List<T>, acc: String): String =
+        when {
+            list.isEmpty() -> acc
+            acc.isEmpty() -> makeStringTailIter(list.drop(1), "${list.first()}")
+            else -> makeStringTailIter(list.drop(1), "$acc $delim ${list.first()}")
+        }
+
+    return makeStringTailIter(list, "")
+}
+
 fun main() {
 
 }
