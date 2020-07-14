@@ -97,3 +97,54 @@ fun <T, U> foldRight(list: List<T>, stop: U, f: (T, U) -> U): U {
 
 fun stringFoldRight(list: List<Char>) =
         foldRight(list, "", ::preAppend)
+
+private fun <T> prepend(list: List<T>, element: T): List<T> =
+        listOf(element) + list
+
+fun <T> reverse(list: List<T>): List<T> = list.fold(listOf(), ::prepend)
+
+fun <T> copy(list: List<T>): List<T> =
+        list.fold(listOf(), { acc, item -> acc + item })
+
+fun range(start: Int, end: Int): List<Int> {
+    val result: MutableList<Int> = mutableListOf()
+    var index = start
+
+    while (index < end) {
+        result.add(index)
+        index++
+    }
+
+    return result
+}
+
+fun <T> unfold(seed: T, f: (T) -> T, p: (T) -> Boolean): List<T> {
+    val result: MutableList<T> = mutableListOf()
+    var i = seed
+
+    while (p(i)) {
+        result.add(i)
+        i = f(i)
+    }
+
+    return result
+}
+
+fun range2(start: Int, end: Int): List<Int> =
+        unfold(start, ::inc) { it < end }
+
+fun recurRange(start: Int, end: Int): List<Int> =
+        if (start == end) listOf()
+        else prepend(recurRange(start + 1, end), start)
+
+fun <T> unfoldRecur(seed: T, f: (T) -> T, p: (T) -> Boolean): List<T> =
+        if (!p(seed)) listOf()
+        else prepend(unfoldRecur(f(seed), f, p), seed)
+
+fun <T> unfoldCoRecur(seed: T, f: (T) -> T, p: (T) -> Boolean): List<T> {
+    tailrec fun unfoldCoRecurIter(seed: T, acc: List<T>): List<T> =
+            if (!p(seed)) acc
+            else unfoldCoRecurIter(f(seed), acc + seed)
+
+    return unfoldCoRecurIter(seed, listOf())
+}
