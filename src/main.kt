@@ -55,6 +55,16 @@ object Factorial {
     }
 }
 
+fun fibonacci(n: Int): BigInteger {
+    tailrec fun fibonacci(n1: BigInteger, n: Int, fn: BigInteger): BigInteger {
+        if (n == 0) return fn
+
+        return fibonacci(fn, n - 1, fn + n1)
+    }
+
+    return fibonacci(BigInteger.ONE, n, BigInteger.ZERO)
+}
+
 fun main() {
 
 }
