@@ -23,3 +23,26 @@ fun fiboMemo(n: Int): String {
             fibonacci(BigInteger.ONE, n, listOf(BigInteger.ZERO)),
             ", ")
 }
+
+typealias FiboPair = Pair<BigInteger, BigInteger>
+
+val f = { (a, b): FiboPair -> FiboPair(b, a + b) }
+
+fun <T> iterate(seed: T, f: (T) -> T, n: Int): List<T> {
+    tailrec fun unfoldCoRecurIter(seed: T, acc: List<T>): List<T> =
+            if (acc.size == n) acc
+            else unfoldCoRecurIter(f(seed), acc + seed)
+
+    return unfoldCoRecurIter(seed, listOf())
+}
+
+fun <T, U> map(f: (T) -> U, list: List<T>): List<U> =
+        list.fold(listOf(), { acc, item -> acc + f(item) })
+
+fun fiboCoRecur(n: Int): String {
+    val f0f1 = FiboPair(BigInteger.ONE, BigInteger.ONE)
+    val pairs = iterate(f0f1, f, n)
+    val pairToFirst = map({ (a): FiboPair -> a }, pairs)
+
+    return makeStringFoldLeft(pairToFirst, ", ")
+}
